@@ -1,14 +1,19 @@
+"""Module that creates the Flask app."""
+
 import os
 
 import openai
 from flask import Flask, redirect, render_template, request, url_for
 
+
 app = Flask(__name__)
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 @app.route("/", methods=("GET", "POST"))
 def index():
+    """Main page.
+    """
     if request.method == "POST":
         animal = request.form["animal"]
         response = openai.Completion.create(
@@ -22,14 +27,20 @@ def index():
     return render_template("index.html", result=result)
 
 
-def generate_prompt(animal):
-    return """Suggest three names for an animal that is a superhero.
+def generate_prompt(animal: str) -> str:
+    """Generate a prompt for the OpenAI API.
 
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: {}
-Names:""".format(
-        animal.capitalize()
-    )
+    Args:
+        animal (str): The animal to generate names for.
+
+    Returns:
+        str: The prompt.
+    """
+    return f"""Suggest three names for an animal that is a superhero.
+
+                Animal: Cat
+                Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
+                Animal: Dog
+                Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
+                Animal: {animal.capitalize()}
+                Names:"""
